@@ -17,7 +17,12 @@ public class ProductService {
     @KafkaListener(topics = "order-create",groupId = "product-group")
     public void productConsumer(OrderDto orderDto){
         logger.info("đã nhận được message");
-       updateStock(orderDto.getProductId(), orderDto.getQuantity());
+        try {
+            updateStock(orderDto.getProductId(), orderDto.getQuantity());
+            logger.info("Stock đã được cập nhật thành công cho productId: {}", orderDto.getProductId());
+        } catch (RuntimeException e) {
+            logger.error("Lỗi khi cập nhật stock: {}", e.getMessage());
+        }
    }
     @Transactional
     public void updateStock(Long productId, int quantity) {
@@ -28,7 +33,7 @@ public class ProductService {
             }
             product.setStock(product.getStock() - quantity);
             productRepository.save(product);
-            System.out.println("Đã cập nhật số lượng sản phẩm");
+            logger.info("Đã cập nhật số lượng sản phẩm");
         }else{
             throw new NullPointerException("Không có sản phẩm");
         }

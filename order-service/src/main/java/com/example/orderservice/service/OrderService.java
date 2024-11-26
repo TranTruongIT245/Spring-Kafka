@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface OrderService {
-    Orders createOrder(OrderDto orderDto);
+    OrderDto createOrder(OrderDto orderDto);
 }
